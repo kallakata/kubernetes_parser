@@ -8,5 +8,6 @@ Inspired by kubectl, serves for internal purposes and experiments.
 
 ```console
 $ pip install -r requirements.txt
-$ ./parse.py [ARGUMENTS]
-$ ./parse.py --help
+$ chmod +x kubernetes_parser_nodes.py kubernetes_parser_pods.py
+$ ./kubernetes_parser_nodes.py [ARGUMENTS]
+$ ./kubernetes_parser_pods.py --help
