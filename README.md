@@ -4,6 +4,8 @@ A simple parser to list nodes, pods, namespaces and metadata from a desired cont
 
 Inspired by kubectl, serves for internal purposes and experiments.
 
+Please check Makefile for additional options.
+
 ### Usage ###
 
 ```console
