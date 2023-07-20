@@ -24,3 +24,13 @@ $ make setup-pods
 ```console
 $ make install-pods
 ```
+
+### Run pods CLI ###
+```console
+$ make setup-pods
+```
+
+### Install dependencies for pods CLI ###
+```console
+$ make install-pods
+```
