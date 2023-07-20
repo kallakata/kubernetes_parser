@@ -25,12 +25,12 @@ $ make setup-pods
 $ make install-pods
 ```
 
-### Run pods CLI ###
+### Run nodes CLI ###
 ```console
-$ make setup-pods
+$ make setup-nodes
 ```
 
-### Install dependencies for pods CLI ###
+### Install dependencies for nodes CLI ###
 ```console
-$ make install-pods
+$ make install-nodes
 ```
