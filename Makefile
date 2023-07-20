@@ -6,7 +6,7 @@ setup-pods:
 	./pods-env/bin/pip install -r requirements.txt
 
 .PHONY: setup-nodes
-setup-pods:
+setup-nodes:
 	@which python3
 	python3 -m pip install virtualenv
 	python3 -m virtualenv nodes-env
