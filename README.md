@@ -15,5 +15,7 @@ $ ./kubernetes_parser_nodes.py [ARGUMENTS]
 $ ./kubernetes_parser_pods.py --help
 ```
 
-# Run
+### Run ###
 ```console
+$ make setup
+```
