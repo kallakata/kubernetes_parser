@@ -34,4 +34,3 @@ $ make setup-nodes
 ```console
 $ make install-nodes
 ```
-
