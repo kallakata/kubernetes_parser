@@ -4,44 +4,97 @@
     using the present kube context.
 """
 
-from kubernetes import client, config
 import argparse
+import time
+import sys
+from auth import AuthNodes
+from prettytable import PrettyTable
 
 class NodeList:
-    def list_nodes(context):
-        config.load_kube_config(context=context)
+    def __init__(self, context=False, auth=[]):
+        self.auth = auth
+        self.context = context
 
-        kube_client = client.CoreV1Api()
-        node_list = kube_client.list_node(watch=False, pretty=True, limit=1000)
-        if len(node_list.items) > 0:
-            print("NODE\t\t\t\t\t\tSTATUS")
-            for node in node_list.items:
-                node_name = node.metadata.name
-                node_status = "Not Ready"   # Unknown, not ready, unhealthy, etc.
-                node_scheduling = node.spec.unschedulable
-                for condition in node.status.conditions:
-                    if condition.type == "Ready" and condition.status:
-                        node_status = "Ready"
-                        break
-                if node_scheduling is None or not node_scheduling:
-                    print(f"{node_name} {node_status}")
-                else:
-                    print(f"{node_name} {node_status},SchedulingDisabled")
+    def list_nodes(self):
+        print('Listing nodes on',
+                f'namespace {self.context}')
+
+        not_running_nodes = []
+        nodes_list = self.auth.get()
+        if len(nodes_list.items) > 0:
+            time.sleep(2)
+            names = []
+            states = []
+            ips = []
+            for node in nodes_list.items:
+                names.append(node.metadata.name)
+                states.append(node.status.phase)
+                ips.append(node.spec.pod_cidr)
+                print("Listing running nodes...")
+            t = PrettyTable()
+            t.add_column('Name', names)
+            t.add_column('State', states)
+            t.add_column('IP', ips)
+            print(t)
+
         else:
-            print("No nodes available in the cluster")
+            print("No nodes in context, please choose a different one.")
 
-    if __name__ == '__main__':
-        """List nodes."""
-        parser = argparse.ArgumentParser(description='List nodes for context.')
+        # for resp in response.__dict__.items():
+        #     resp = list(resp)
+        #     if resp.status.reason == "Terminated" or resp.status.phase == "Failed":
+        #         print("Listing defunct pods...")
+        #         # print("\t\tPOD\t\t\tSTATUS\t\t\tIP\t\t\tREASON")
+        #         time.sleep(2)
+        #         print(f"The {pod.metadata.name} status is non-running because of: {reason}")
+        #     else:
+        #         print("Listing running pods...")
+        #         print("\t\tPOD\t\t\tSTATUS\t\t\tIP\t\t\tREASON")
+        #         print("%s\t\t%s\t\t\t%s" % (pod.metadata.name,
+        #                             pod.status.phase,
+        #                             pod.status.pod_ip))
+        #         print("\t\t\t\t\t\t\t\t\t\t\t%s" % (response.status.reason))
+        return []
+
+if __name__ == '__main__':
+    try:
+        """Command-line prompts."""
+        parser = argparse.ArgumentParser(prog='parse_nodes',
+                                        usage='nodes [context]',
+                                        description='Returns the list of nodes in given context.')
         parser.add_argument("--context",
-            help='The kubeconfig context to list nodes in.',
-            dest="context"
+            help='The context for kubernetes cluster.',
+            action='store',
+            default=False,
+            nargs='?'
+        )
+        parser.add_argument("--limit",
+            help='Maximum number of pods to list.',
+            dest="limit",
+            required=False
+        )
+        parser.add_argument("--timeout_seconds",
+            help='Timeout in seconds.',
+            dest="timeout_seconds",
+            nargs="?",
+            type=int,
+            required=False
+        )
+        parser.add_argument("--watch",
+            help='True or false... watch.',
+            action='store_true',
+            required=False
         )
 
         arguments = parser.parse_args()
 
         if arguments.context is None:
-            parser.error("A 'context' is required.")
+            parser.error("'Context' is required.")
 
-        list_nodes(arguments.context)
+        auth = AuthNodes(auth_method='local', context=arguments.context)
+        listing = NodeList(arguments.context, auth)
+        listing.list_nodes()
 
+    except KeyboardInterrupt:
+        print('Aborted.')
+        sys.exit(2)
