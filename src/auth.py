@@ -31,8 +31,7 @@ class AuthPods:
             sys.exit(1)
 
 class AuthNodes:
-    def __init__(self, auth_method="local", namespace=None, context=None):
-        self.namespace = namespace
+    def __init__(self, auth_method="local", context=None):
         if auth_method == 'local':
             config.load_kube_config()
         self.context = context
@@ -46,7 +45,7 @@ class AuthNodes:
         """
         kube_client = client.CoreV1Api()
         try:
-            return kube_client.list_node(watch=False, pretty=True, limit=1000)
+            return kube_client.list_node(self.context, watch=False, pretty=True, limit=1000)
         except ApiException as exception:
             print('There was an error while listing: ')
             print(exception.reason)
