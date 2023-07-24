@@ -8,6 +8,7 @@ import argparse
 import time
 import sys
 from auth import AuthPods
+from prettytable import PrettyTable
 
 class PodsList:
     def __init__(self, namespace=False, context=False, auth=[]):
@@ -24,19 +25,30 @@ class PodsList:
         pods_list = self.auth.get()
         if len(pods_list.items) > 0:
             time.sleep(2)
+            names = []
+            states = []
+            ips = []
             for pod in pods_list.items:
+                names.append(pod.metadata.name)
+                states.append(pod.status.phase)
+                ips.append(pod.status.pod_ip)
                 print("Listing running pods...")
-                if pod.status.phase.lower() == 'running':
-                    print(f"Pod {pod} on {self.namespace} is running...")
-                    print("\t\tPOD\t\t\tSTATUS\t\t\tIP\t\t\tREASON")
-                    print("%s\t\t%s\t\t\t%s" % (pod.metadata.name,
-                                        pod.status.phase,
-                                        pod.status.pod_ip))
-                    print("\t\t\t\t\t\t\t\t\t\t\t%s" % (pod.status.reason))
-                else:
-                    terminated = not_running_containers.append(pod.metadata.name)
-                    print(f"Pod {pod} in {self.namespace} has a status of: {pod.status.phase}")
-                    print(terminated)
+            t = PrettyTable()
+            t.add_column('Name', names)
+            t.add_column('State', states)
+            t.add_column('IP', ips)
+            print(t)
+            # if pod.status.phase.lower() == 'running':
+            #     print(f"Pod {pod.metadata.name} on {self.namespace} is running...")
+            #     print("\t\tPOD\t\t\tSTATUS\t\t\tIP\t\t\tREASON")
+            #     print("%s\t\t%s\t\t\t%s" % (pod.metadata.name,
+            #                         pod.status.phase,
+            #                         pod.status.pod_ip))
+            #     print("\t\t\t\t\t\t\t\t\t\t\t%s" % (pod.status.reason))
+            # else:
+            #     terminated = not_running_containers.append(pod.metadata.name)
+            #     print(f"Pod {pod.metadata.name} in {self.namespace} has a status of: {pod.status.phase}")
+            #     print(terminated)
 
         else:
             print("No pods in namespace, please choose a different one.")
@@ -98,6 +110,7 @@ if __name__ == '__main__':
         if arguments.context is None or arguments.namespace is None:
             parser.error("'Context' or 'namespace' is required.")
 
+        # add context option, not current one
         auth = AuthPods(auth_method='local', namespace=arguments.namespace)
         listing = PodsList(arguments.namespace, arguments.context, auth)
         listing.list_pods()
