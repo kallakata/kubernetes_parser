@@ -28,15 +28,18 @@ class PodsList:
             names = []
             states = []
             ips = []
+            node = []
             for pod in pods_list.items:
                 names.append(pod.metadata.name)
                 states.append(pod.status.phase)
                 ips.append(pod.status.pod_ip)
+                node.append(pod.spec.node_name)
                 print("Listing running pods...")
             t = PrettyTable()
             t.add_column('Name', names)
             t.add_column('State', states)
             t.add_column('IP', ips)
+            t.add_column('Node', node)
             print(t)
             # if pod.status.phase.lower() == 'running':
             #     print(f"Pod {pod.metadata.name} on {self.namespace} is running...")
