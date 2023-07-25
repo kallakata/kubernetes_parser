@@ -18,22 +18,25 @@ class NodeList:
     def list_nodes(self):
         print('Listing nodes on',
                 f'namespace {self.context}')
-
+        time.sleep(2)
+        print("Listing running nodes...")
         not_running_nodes = []
         nodes_list = self.auth.get()
         if len(nodes_list.items) > 0:
             time.sleep(2)
             names = []
-            states = []
+            runtime = []
+            os = []
             ips = []
             for node in nodes_list.items:
                 names.append(node.metadata.name)
-                states.append(node.status.phase)
+                runtime.append(node.status.node_info.os_image)
                 ips.append(node.spec.pod_cidr)
-                print("Listing running nodes...")
+                os.append("/".join([node.status.node_info.operating_system, node.status.node_info.architecture]))
             t = PrettyTable()
             t.add_column('Name', names)
-            t.add_column('State', states)
+            t.add_column('Runtime', runtime)
+            t.add_column('OS', os)
             t.add_column('IP', ips)
             print(t)
 
@@ -66,6 +69,7 @@ if __name__ == '__main__':
             help='The context for kubernetes cluster.',
             action='store',
             default=False,
+            dest="context",
             nargs='?'
         )
         parser.add_argument("--limit",
