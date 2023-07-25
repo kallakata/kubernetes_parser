@@ -20,13 +20,14 @@ $ ./kubernetes_parser_pods.py --help
 ```console
 $ make install-pods
 $ make setup-pods
-$ pods [ARGUMENTS]
+$ pods [ARGUMENTS] --help
 ```
 
 ### Run nodes CLI and install dependencies ###
 ```console
 $ make install-nodes
 $ make setup-nodes
+$ nodes [ARGUMENTS] --help
 ```
 
 ### Install dependencies for nodes CLI ###
