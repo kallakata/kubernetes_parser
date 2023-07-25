@@ -8,6 +8,7 @@ Please check Makefile for additional options.
 
 ## Usage ##
 
+### Manual ###
 ```console
 $ pip install -r requirements.txt
 $ chmod +x kubernetes_parser_nodes.py kubernetes_parser_pods.py
