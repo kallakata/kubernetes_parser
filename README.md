@@ -29,8 +29,3 @@ $ make install-nodes
 $ make setup-nodes
 $ nodes [ARGUMENTS] --help
 ```
-
-### Install dependencies for nodes CLI ###
-```console
-$ make install-nodes
-```
