@@ -6,7 +6,7 @@ Inspired by kubectl, serves for internal purposes and experiments.
 
 Please check Makefile for additional options.
 
-### Usage ###
+## Usage ##
 
 ```console
 $ pip install -r requirements.txt
