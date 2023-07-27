@@ -18,9 +18,10 @@ class PodsList:
 
     def list_pods(self):
         print('Listing pods on',
-                f'namespace {self.namespace}' if self.namespace\
+                f'namespace {self.namespace} and context {self.context}' if self.namespace\
                 else 'all namespaces')
-
+        time.sleep(2)
+        print("Listing running pods...")
         not_running_containers = []
         pods_list = self.auth.get()
         if len(pods_list.items) > 0:
@@ -34,7 +35,6 @@ class PodsList:
                 states.append(pod.status.phase)
                 ips.append(pod.status.pod_ip)
                 node.append(pod.spec.node_name)
-                print("Listing running pods...")
             t = PrettyTable()
             t.add_column('Name', names)
             t.add_column('State', states)
@@ -82,13 +82,15 @@ if __name__ == '__main__':
             help='The namespace to list pods in.',
             action='store',
             default=False,
-            nargs='?'
+            nargs='?',
+            dest="namespace"
         )
         parser.add_argument("--context",
             help='The context for kubernetes cluster.',
             action='store',
             default=False,
-            nargs='?'
+            nargs='?',
+            dest="context"
         )
         parser.add_argument("--limit",
             help='Maximum number of pods to list.',
@@ -114,7 +116,7 @@ if __name__ == '__main__':
             parser.error("'Context' or 'namespace' is required.")
 
         # add context option, not current one
-        auth = AuthPods(auth_method='local', namespace=arguments.namespace)
+        auth = AuthPods(auth_method='local', namespace=arguments.namespace, context=arguments.context)
         listing = PodsList(arguments.namespace, arguments.context, auth)
         listing.list_pods()
 

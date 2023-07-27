@@ -10,9 +10,9 @@ class AuthPods:
         self.namespace = namespace
         self.context = context
         if auth_method == 'local':
-            config.load_kube_config()
-        if auth_method == 'local' and self.context:
-            config.load_kube_config(self.context)
+            config.load_kube_config(context=self.context)
+        # if auth_method == 'local' and self.context:
+        #     config.load_kube_config(context=self.context)
 
     def get(self):
         """
@@ -33,6 +33,8 @@ class AuthPods:
 class AuthNodes:
     def __init__(self, auth_method="local", context=None):
         self.context = context
+        if self.context is None:
+            raise Exception("Context is missing.")
         if auth_method == 'local':
             config.load_kube_config(context=self.context)
         # self.limit = limit
