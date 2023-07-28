@@ -11,9 +11,9 @@ Please check Makefile for additional options. Schema defined in Kubernetes API d
 ### Manual ###
 ```console
 $ pip install -r requirements.txt
-$ chmod +x kubernetes_parser_nodes.py kubernetes_parser_pods.py
-$ ./kubernetes_parser_nodes.py [ARGUMENTS]
-$ ./kubernetes_parser_pods.py --help
+$ chmod +x kubernetes_parser_nodes.py kubernetes_parser_pods.py kubernetes_parser_nodepools.py
+$ ./[PARSER] [ARGUMENTS]
+$ ./[PARSER] --help
 ```
 
 ### Run pods CLI and install dependencies ###
