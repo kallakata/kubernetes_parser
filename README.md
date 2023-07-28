@@ -29,3 +29,10 @@ $ make install-nodes
 $ make setup-nodes
 $ nodes [ARGUMENTS] --help
 ```
+
+### Run nodepools CLI and install dependencies ###
+```console
+$ make install-nodepools
+$ make setup-nodepools
+$ nodepools [ARGUMENTS] --help
+```
