@@ -52,3 +52,23 @@ class AuthNodes:
             print('There was an error while listing: ')
             print(exception.reason)
             sys.exit(1)
+
+# class AuthNodepools:
+#     def __init__(self, auth_method="local"):
+#         if auth_method == 'local':
+#             config.load_kube_config()
+#         # self.limit = limit
+#         # self.timeout_seconds = timeout_seconds
+
+#     def get(self):
+#         """
+#             Returns the nodes list on the specified namespace. If not set, list pods for
+#             all namespaces.
+#         """
+#         kube_client = client.CoreV1Api()
+#         try:
+#             return kube_client.list_node()
+#         except ApiException as exception:
+#             print('There was an error while listing: ')
+#             print(exception.reason)
+#             sys.exit(1)

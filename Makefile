@@ -27,3 +27,18 @@ install-nodes:
 	@cp nodes ${HOME}/bin/
 	@echo "\nYou can add nodes to your path running"
 	@echo "$$ export PATH="\$${PATH}:\$${HOME}/bin""
+
+.PHONY: setup-nodepools
+setup-nodepools:
+	@which python3
+	python3 -m pip install virtualenv
+	python3 -m virtualenv nodepools-env
+	./nodepools-env/bin/pip install -r requirements.txt
+
+.PHONY: install-nodepools
+install-nodepools:
+	@echo  "${PWD}/nodepools-env/bin/python3 ${PWD}/src/kubernetes_parser_nodepools.py \$$@" > nodepools
+	@chmod +x nodepools
+	@cp nodepools ${HOME}/bin/
+	@echo "\nYou can add nodes to your path running"
+	@echo "$$ export PATH="\$${PATH}:\$${HOME}/bin""
