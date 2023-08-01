@@ -9,13 +9,20 @@ import time
 import sys
 from auth import AuthNodes
 from prettytable import PrettyTable
+from googleapiclient.discovery import build
 
 class NodeList:
-    def __init__(self, context=False, auth=[]):
+    def __init__(self, context=False, cluster=None, project_id=None, zone=None, auth=[]):
         self.auth = auth
         self.context = context
+        self.cluster = cluster
+        self.project_id = project_id
+        self.zone = zone
 
     def list_nodes(self):
+        if self.context is None:
+            raise Exception("Context is missing.")
+
         print('Listing nodes on',
                 f'namespace {self.context}')
         time.sleep(2)
@@ -43,20 +50,57 @@ class NodeList:
         else:
             print("No nodes in context, please choose a different one.")
 
-        # for resp in response.__dict__.items():
-        #     resp = list(resp)
-        #     if resp.status.reason == "Terminated" or resp.status.phase == "Failed":
-        #         print("Listing defunct pods...")
-        #         # print("\t\tPOD\t\t\tSTATUS\t\t\tIP\t\t\tREASON")
-        #         time.sleep(2)
-        #         print(f"The {pod.metadata.name} status is non-running because of: {reason}")
-        #     else:
-        #         print("Listing running pods...")
-        #         print("\t\tPOD\t\t\tSTATUS\t\t\tIP\t\t\tREASON")
-        #         print("%s\t\t%s\t\t\t%s" % (pod.metadata.name,
-        #                             pod.status.phase,
-        #                             pod.status.pod_ip))
-        #         print("\t\t\t\t\t\t\t\t\t\t\t%s" % (response.status.reason))
+    def list_nodes_in_pool(self):
+        """Lists all clusters and associated node pools."""
+        service = build("container", "v1")
+        clusters_resource = service.projects().zones().clusters()
+
+        clusters_response = clusters_resource.list(
+            projectId=self.project_id, zone=self.zone
+        ).execute()
+        # t = PrettyTable()
+        # names_cluster = []
+        # status_cluster = []
+        # version_cluster = []
+        # names_nodepool = []
+        # status_nodepool = []
+        # config_nodepool = []
+
+        for cluster in clusters_response.get("clusters", []):
+            print(
+                "Cluster: {}, Status: {}, Current Master Version: {}".format(
+                    cluster["name"], cluster["status"], cluster["currentMasterVersion"]
+                )
+            )
+            # t.add_column('Cluster', cluster["name"])
+            # t.add_column('Cluster status', cluster["status"])
+            # names_cluster.append(cluster["name"])
+            # status_cluster.append(cluster["status"])
+            # version_cluster.append(cluster["currentMasterVersion"])
+
+            nodepools_response = (
+                clusters_resource.nodePools()
+                .list(projectId=self.project_id, zone=self.zone, clusterId=self.cluster)
+                .execute()
+            )
+
+            # t.add_column('Cluster name', names_cluster)
+            # t.add_column('Cluster status', status_cluster)
+            # t.add_column('Version', version_cluster)
+            # print(t)
+
+            for nodepool in nodepools_response["nodePools"]:
+                print(
+                    "\n-> Pool: {},\n  Status: {},\n  Machine Type: {},\n "
+                    " Autoscaling: {},\n  MinNodeCount: {},\n  MaxNodeCount: {}".format(
+                        nodepool["name"],
+                        nodepool["status"],
+                        nodepool["config"]["machineType"],
+                        nodepool.get("autoscaling", {}).get("enabled", False),
+                        nodepool.get("autoscaling", {}).get("minNodeCount"),
+                        nodepool.get("autoscaling", {}).get("maxNodeCount")
+                    )
+                )
         return []
 
 if __name__ == '__main__':
@@ -68,8 +112,29 @@ if __name__ == '__main__':
         parser.add_argument("--context",
             help='The context for kubernetes cluster.',
             action='store',
-            default=False,
+            default=None,
             dest="context",
+            # nargs='?'
+        )
+        parser.add_argument("--cluster",
+            help='Cluster to list the nodes in.',
+            action='store',
+            default=None,
+            dest="cluster",
+            nargs='?'
+        )
+        parser.add_argument("--project_id",
+            help='Project ID instead of context.',
+            action='store',
+            default=None,
+            dest="project_id",
+            nargs='?'
+        )
+        parser.add_argument("--zone",
+            help='Zone to list nodepools in. Serves as a replacement for --context in combination with --project_id',
+            action='store',
+            default=None,
+            dest="zone",
             nargs='?'
         )
         parser.add_argument("--limit",
@@ -92,12 +157,18 @@ if __name__ == '__main__':
 
         arguments = parser.parse_args()
 
-        if arguments.context is None:
-            parser.error("'Context' is required.")
+        # if arguments.context is None:
+        #     parser.error("'Context' is required.")
 
         auth = AuthNodes(auth_method='local', context=arguments.context)
-        listing = NodeList(arguments.context, auth)
-        listing.list_nodes()
+
+        if all(item is None for item in [arguments.cluster, arguments.project_id, arguments.zone]) and arguments.context is not None:
+            list_nodes = NodeList(arguments.context, arguments.cluster, arguments.project_id, arguments.zone, auth)
+            list_nodes.list_nodes()
+
+        elif all(item is not None for item in [arguments.cluster, arguments.project_id, arguments.zone]) and arguments.context is None:
+            list_nodes = NodeList(arguments.context, arguments.cluster, arguments.project_id, arguments.zone, auth)
+            list_nodes.list_nodes_in_pool()
 
     except KeyboardInterrupt:
         print('Aborted.')
