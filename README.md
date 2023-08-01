@@ -2,7 +2,7 @@
 
 A simple parser to list nodes, pods, namespaces and metadata from a desired context, along with chosen sub-metadata in a cli-like manner.
 
-Inspired by *kubectl*, serves for internal purposes and experiments. Later on, I would like to merge all three tools together.
+Inspired by *kubectl*, serves for internal purposes and experiments. Later on, I would like to merge all three tools together. As of now, nodes and nodepool listing can be used conjoined.
 
 Please check Makefile for additional options. Schema defined in Kubernetes API docs (V1Pod and V1Node).
 
