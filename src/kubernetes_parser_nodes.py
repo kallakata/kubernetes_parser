@@ -108,7 +108,8 @@ if __name__ == '__main__':
         """Command-line prompts."""
         parser = argparse.ArgumentParser(prog='parse_nodes',
                                         usage='nodes [context]',
-                                        description='Returns the list of nodes in given context.')
+                                        description=__doc__,
+                                        formatter_class=argparse.RawDescriptionHelpFormatter)
         parser.add_argument("--context",
             help='The context for kubernetes cluster.',
             action='store',
@@ -173,6 +174,7 @@ if __name__ == '__main__':
         else:
             sys.tracebacklimit = 0
             raise Exception("Context, project ID or zone is missing.\nTo list nodepools and clusters, specify project and zone. To list nodes, specify context.")
+            parser.print_help()
 
     except KeyboardInterrupt:
         print('Aborted.')
