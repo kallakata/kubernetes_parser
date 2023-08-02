@@ -170,6 +170,10 @@ if __name__ == '__main__':
             list_nodes = NodeList(arguments.context, arguments.cluster, arguments.project_id, arguments.zone, auth)
             list_nodes.list_nodes_in_pool()
 
+        else:
+            sys.tracebacklimit = 0
+            raise Exception("Context, project ID or zone is missing.\nTo list nodepools and clusters, specify project and zone. To list nodes, specify context.")
+
     except KeyboardInterrupt:
         print('Aborted.')
         sys.exit(2)
