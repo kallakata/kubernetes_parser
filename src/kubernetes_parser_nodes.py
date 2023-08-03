@@ -91,11 +91,12 @@ class NodeList:
 
             for nodepool in nodepools_response["nodePools"]:
                 print(
-                    "\n-> Pool: {},\n  Status: {},\n  Machine Type: {},\n "
-                    " Autoscaling: {},\n  MinNodeCount: {},\n  MaxNodeCount: {}".format(
+                    "\n-> Pool: {},\n   Status: {},\n   Machine Type: {},\n "
+                    "  Version: {},\n   Autoscaling: {},\n   MinNodeCount: {},\n   MaxNodeCount: {}".format(
                         nodepool["name"],
                         nodepool["status"],
                         nodepool["config"]["machineType"],
+                        nodepool["version"],
                         nodepool.get("autoscaling", {}).get("enabled", False),
                         nodepool.get("autoscaling", {}).get("minNodeCount"),
                         nodepool.get("autoscaling", {}).get("maxNodeCount")
