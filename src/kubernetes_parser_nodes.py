@@ -173,7 +173,7 @@ if __name__ == '__main__':
 
         else:
             sys.tracebacklimit = 0
-            raise Exception("Context, project ID or zone is missing.\nTo list nodepools and clusters, specify project and zone. To list nodes, specify context.")
+            raise Exception("Context, project ID or zone is missing.\nTo list nodepools and clusters, specify project, zone and cluster. To list nodes, specify context.")
             parser.print_help()
 
     except KeyboardInterrupt:
