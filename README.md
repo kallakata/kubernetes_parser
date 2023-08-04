@@ -4,7 +4,7 @@ A simple parser to list nodes, pods, namespaces and metadata from a desired cont
 
 Inspired by *kubectl*, serves for internal purposes and experiments. Later on, I would like to merge all three tools together. As of now, nodes and nodepool listing can be used conjoined.
 
-Please check Makefile for additional options. Schema defined in Kubernetes API docs (V1Pod and V1Node). Nodes-cli can be used both for nodepools and nodes, depending on the context.
+Please check Makefile for additional options. Schema defined in Kubernetes API docs (V1Pod and V1Node). Nodes-cli can be used both for nodepools and nodes, depending on the context
 
 ## Usage ##
 
