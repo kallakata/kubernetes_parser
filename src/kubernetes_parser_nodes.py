@@ -10,6 +10,7 @@ import sys
 from auth import AuthNodes
 from prettytable import PrettyTable
 from googleapiclient.discovery import build
+from prompt_toolkit import prompt
 
 class UltimateHelpFormatter(
     argparse.RawTextHelpFormatter, argparse.ArgumentDefaultsHelpFormatter
@@ -235,7 +236,15 @@ if __name__ == '__main__':
 
             auth = AuthNodes(auth_method='local', context=arguments.context)
             list_nodes = NodeList(arguments.context, auth)
-            list_nodes.list_nodes()
+            p = prompt("Do you want to continue? \n", wrap_lines=False, multiline=False)
+            if p == "Yes" or p == "Y":
+                time.sleep(1)
+                print("\nProceeding...\n")
+                time.sleep(2)
+                list_nodes.list_nodes_in_pool()
+            else:
+                print('Aborted')
+                sys.exit(1)
 
         elif arguments.command == 'list_nodepools':
             # elif all(item is not None for item in [arguments.cluster, arguments.project_id, arguments.zone]) and arguments.context is None:
@@ -244,7 +253,15 @@ if __name__ == '__main__':
                 raise Exception("Please specify project_id, zone and cluster.")
             
             list_nodepools = PoolList(arguments.cluster, arguments.project_id, arguments.zone)
-            list_nodepools.list_nodes_in_pool()
+            p = prompt("Do you want to continue? \n", wrap_lines=False, multiline=False)
+            if p == "Yes" or p == "Y":
+                time.sleep(1)
+                print("\nProceeding...\n")
+                time.sleep(2)
+                list_nodepools.list_nodes_in_pool()
+            else:
+                print('Aborted')
+                sys.exit(1)
 
         elif arguments.command is None:
             sys.tracebacklimit = 0
