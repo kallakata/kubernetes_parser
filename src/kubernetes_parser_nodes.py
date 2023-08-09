@@ -11,6 +11,7 @@ from auth import AuthNodes
 from prettytable import PrettyTable
 from googleapiclient.discovery import build
 from prompt_toolkit import prompt
+from prompt_completer import Completer
 
 class UltimateHelpFormatter(
     argparse.RawTextHelpFormatter, argparse.ArgumentDefaultsHelpFormatter
@@ -26,8 +27,8 @@ class NodeList:
         if self.context is None:
             raise Exception("Context is missing.")
 
-        print('Listing nodes on',
-                f'namespace {self.context}')
+        print('Listing nodes in',
+                f'context {self.context}')
         time.sleep(2)
         print("Listing running nodes...")
         not_running_nodes = []
@@ -224,6 +225,7 @@ if __name__ == '__main__':
         )
 
         arguments = parser.parse_args()
+        completer = Completer()
 
         # if arguments.context is None:
         #     parser.error("'Context' is required.")
@@ -236,12 +238,12 @@ if __name__ == '__main__':
 
             auth = AuthNodes(auth_method='local', context=arguments.context)
             list_nodes = NodeList(arguments.context, auth)
-            p = prompt("Do you want to continue? \n", wrap_lines=False, multiline=False)
+            p = prompt("Do you want to continue? \n", completer=completer.zoneCompleter(), complete_while_typing=True)
             if p == "Yes" or p == "Y":
                 time.sleep(1)
                 print("\nProceeding...\n")
                 time.sleep(2)
-                list_nodes.list_nodes_in_pool()
+                list_nodes.list_nodes()
             else:
                 print('Aborted')
                 sys.exit(1)
@@ -253,12 +255,12 @@ if __name__ == '__main__':
                 raise Exception("Please specify project_id, zone and cluster.")
             
             list_nodepools = PoolList(arguments.cluster, arguments.project_id, arguments.zone)
-            p = prompt("Do you want to continue? \n", wrap_lines=False, multiline=False)
+            p = prompt("Do you want to continue? \n", completer=completer.zoneCompleter(), complete_while_typing=True)
             if p == "Yes" or p == "Y":
                 time.sleep(1)
                 print("\nProceeding...\n")
                 time.sleep(2)
-                list_nodepools.list_nodes_in_pool()
+                list_nodepools.list_nodes()
             else:
                 print('Aborted')
                 sys.exit(1)
