@@ -79,10 +79,8 @@ class PoolList:
 
         for cluster in clusters_response.get("clusters", []):
             print(
-                "Cluster: {}, Status: {}, Current Master Version: {}".format(
-                    cluster["name"], cluster["status"], cluster["currentMasterVersion"]
+                "Listing clusters..."
                 )
-            )
 
             # t.add_column('Cluster name', names_cluster)
             names_cluster.append(cluster["name"])
@@ -255,12 +253,12 @@ if __name__ == '__main__':
                 raise Exception("Please specify project_id, zone and cluster.")
             
             list_nodepools = PoolList(arguments.cluster, arguments.project_id, arguments.zone)
-            p = prompt("Do you want to continue? \n", completer=completer.zoneCompleter(), complete_while_typing=True)
+            p = prompt("Do you want to continue? ", completer=completer.zoneCompleter(), complete_while_typing=True)
             if p == "Yes" or p == "Y":
                 time.sleep(1)
                 print("\nProceeding...\n")
                 time.sleep(2)
-                list_nodepools.list_nodes()
+                list_nodepools.list_nodes_in_pool()
             else:
                 print('Aborted')
                 sys.exit(1)
