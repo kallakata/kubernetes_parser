@@ -34,5 +34,5 @@ $ nodes [ARGUMENTS] --help
 ```console
 $ make install-nodepools
 $ make setup-nodepools
-$ nodepools [ARGUMENTS] --help
+$ nodepools [COMMANDS] [ARGUMENTS] --help
 ```
