@@ -1,6 +1,8 @@
 from prompt_toolkit.completion import FuzzyWordCompleter
 from prompt_toolkit.shortcuts import CompleteStyle, prompt
 from prompt_toolkit.completion import NestedCompleter
+from kubernetes import client, config
+from kubernetes.client import configuration
 
 class Completer:
     """
@@ -49,43 +51,14 @@ class Completer:
         return project_completer
 
     def contextCompleter(self):
-        context_completer = FuzzyWordCompleter(
-            [
-                "alligator",
-                "ant",
-                "ape",
-                "bat",
-                "bear",
-                "beaver",
-                "bee",
-                "bison",
-                "butterfly",
-                "cat",
-                "chicken",
-                "crocodile",
-                "dinosaur",
-                "dog",
-                "dolphin",
-                "dove",
-                "duck",
-                "eagle",
-                "elephant",
-                "fish",
-                "goat",
-                "gorilla",
-                "kangaroo",
-                "leopard",
-                "lion",
-                "mouse",
-                "rabbit",
-                "rat",
-                "snake",
-                "spider",
-                "turkey",
-                "turtle",
-            ],
-        )
-        return context_completer
+        contexts = config.list_kube_config_contexts()
+        context_list = [context["name"] for context in contexts]
+        for index in range(len(context_list)):
+            # 0 bobby
+            # 1 hadz
+            # 2 com
+            print(index, contexts[index])
+        return index
 
     def zoneCompleter(self):
         zone_completer = FuzzyWordCompleter(
@@ -144,3 +117,42 @@ class Completer:
         }
     )
         return nested_completer
+    
+    def namespaceCompleter(self):
+        ns_completer = FuzzyWordCompleter(
+            [
+                "alligator",
+                "ant",
+                "ape",
+                "bat",
+                "bear",
+                "beaver",
+                "bee",
+                "bison",
+                "butterfly",
+                "cat",
+                "chicken",
+                "crocodile",
+                "dinosaur",
+                "dog",
+                "dolphin",
+                "dove",
+                "duck",
+                "eagle",
+                "elephant",
+                "fish",
+                "goat",
+                "gorilla",
+                "kangaroo",
+                "leopard",
+                "lion",
+                "mouse",
+                "rabbit",
+                "rat",
+                "snake",
+                "spider",
+                "turkey",
+                "turtle",
+            ],
+        )
+        return ns_completer

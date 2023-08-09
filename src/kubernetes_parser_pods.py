@@ -9,6 +9,8 @@ import time
 import sys
 from auth import AuthPods
 from prettytable import PrettyTable
+from prompt_toolkit import prompt
+from prompt_completer import Completer
 
 class PodsList:
     def __init__(self, namespace=False, context=False, auth=[]):
@@ -74,50 +76,16 @@ class PodsList:
 
 if __name__ == '__main__':
     try:
-        """Command-line prompts."""
-        parser = argparse.ArgumentParser(prog='parse_pods',
-                                        usage='pods [namespace] [context]',
-                                        description='Returns the list of pods in given namespace and context.')
-        parser.add_argument("--namespace",
-            help='The namespace to list pods in.',
-            action='store',
-            default=False,
-            nargs='?',
-            dest="namespace"
-        )
-        parser.add_argument("--context",
-            help='The context for kubernetes cluster.',
-            action='store',
-            default=False,
-            nargs='?',
-            dest="context"
-        )
-        parser.add_argument("--limit",
-            help='Maximum number of pods to list.',
-            dest="limit",
-            required=False
-        )
-        parser.add_argument("--timeout_seconds",
-            help='Timeout.',
-            dest="timeout_seconds",
-            nargs="?",
-            type=int,
-            required=False
-        )
-        parser.add_argument("--watch",
-            help='True or false... watch.',
-            action='store_true',
-            required=False
-        )
+        completer = Completer()
+        ns = prompt("Namespace: ", completer=completer.namespaceCompleter(), complete_while_typing=True)
+        ctx = prompt("Context: ", completer=completer.contextCompleter(), complete_while_typing=True)
 
-        arguments = parser.parse_args()
-
-        if arguments.context is None or arguments.namespace is None:
-            parser.error("'Context' or 'namespace' is required.")
+        if ctx is None or ns is None:
+            argparse.parser.error("'Context' or 'namespace' is required.")
 
         # add context option, not current one
-        auth = AuthPods(auth_method='local', namespace=arguments.namespace, context=arguments.context)
-        listing = PodsList(arguments.namespace, arguments.context, auth)
+        auth = AuthPods(auth_method='local', namespace=ns, context=ctx)
+        listing = PodsList(ns, ctx, auth)
         listing.list_pods()
 
     except KeyboardInterrupt:
