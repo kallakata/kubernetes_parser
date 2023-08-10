@@ -2,9 +2,9 @@
 
 A simple parser to list nodes, pods, namespaces and metadata from a desired context, along with chosen sub-metadata in a cli-like manner.
 
-Inspired by *kubectl*, serves for internal purposes and experiments. Nodepool and nodes listing can be used in conjunction.
+Inspired by *kubectl*, serves for internal purposes and experiments.
 
-Please check Makefile for additional options. Schema defined in Kubernetes API docs (V1Pod and V1Node). Nodes-cli can be used both for nodepools and nodes, depending on the command.
+Please check Makefile for additional options. Schema defined in Kubernetes API docs (V1Pod and V1Node). Nodes-cli parser can be used both for nodepools and nodes, depending on the command.
 
 ## Usage ##
 
