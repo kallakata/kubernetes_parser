@@ -27,7 +27,7 @@ $ pods [ARGUMENTS] --help
 ```console
 $ make install-nodes
 $ make setup-nodes
-$ nodes [ARGUMENTS] --help
+$ nodes [COMMANDS] [ARGUMENTS] --help
 ```
 
 ### Run nodepools CLI and install dependencies ###
