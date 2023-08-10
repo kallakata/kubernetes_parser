@@ -1,5 +1,5 @@
 """
-    This class retrieves the list of the cluster's nodes.
+    This class retrieves the list of the cluster's nodes and nodepools.
     It uses the kubernetes Python client to list the nodes, authenticating
     using the present kube context.
 """
@@ -69,51 +69,67 @@ class PoolList:
         clusters_response = clusters_resource.list(
             projectId=self.project_id, zone=self.zone
         ).execute()
+
         t = PrettyTable()
-        names_cluster = []
-        status_cluster = []
-        version_cluster = []
-        names_nodepool = []
-        status_nodepool = []
-        config_nodepool = []
+        p = PrettyTable()
+        names_cluster, status_cluster, version_cluster, names_nodepool, status_nodepool, version_nodepool, mtype_nodepool, asc_enabled, asc_min, asc_max = ([] for i in range(10))
 
-        for cluster in clusters_response.get("clusters", []):
-            print(
-                "Listing clusters..."
-                )
-
-            # t.add_column('Cluster name', names_cluster)
-            names_cluster.append(cluster["name"])
-            status_cluster.append(cluster["status"])
-            version_cluster.append(cluster["currentMasterVersion"]) 
-            t.add_column('Cluster', names_cluster)
-            t.add_column('Cluster status', status_cluster)
-            t.add_column('Cluster version', version_cluster)
-
-            nodepools_response = (
-                clusters_resource.nodePools()
-                .list(projectId=self.project_id, zone=self.zone, clusterId=self.cluster)
-                .execute()
+        print(
+            "Listing clusters..."
             )
 
-            # t.add_column('Cluster name', names_cluster)
-            # t.add_column('Cluster status', status_cluster)
-            # t.add_column('Version', version_cluster)
-            print(t)
+        for cluster in clusters_response.get("clusters", []):
 
-            for nodepool in nodepools_response["nodePools"]:
-                print(
-                    "\n-> Pool: {},\n   Status: {},\n   Machine Type: {},\n "
-                    "  Version: {},\n   Autoscaling: {},\n   MinNodeCount: {},\n   MaxNodeCount: {}".format(
-                        nodepool["name"],
-                        nodepool["status"],
-                        nodepool["config"]["machineType"],
-                        nodepool["version"],
-                        nodepool.get("autoscaling", {}).get("enabled", False),
-                        nodepool.get("autoscaling", {}).get("minNodeCount"),
-                        nodepool.get("autoscaling", {}).get("maxNodeCount")
-                    )
+            # names_cluster.append(cluster["name"])
+            # status_cluster.append(cluster["status"])
+            # version_cluster.append(cluster["currentMasterVersion"])
+
+            if self.cluster is None:
+                nodepools_response = (
+                    clusters_resource.nodePools()
+                    .list(projectId=self.project_id, zone=self.zone, clusterId=cluster["name"])
+                    .execute()
                 )
+                names_cluster.append(cluster["name"])
+                status_cluster.append(cluster["status"])
+                version_cluster.append(cluster["currentMasterVersion"])
+            else:
+                nodepools_response = (
+                    clusters_resource.nodePools()
+                    .list(projectId=self.project_id, zone=self.zone, clusterId=self.cluster)
+                    .execute()
+                )
+                names_cluster.append(cluster["name"])
+                status_cluster.append(cluster["status"])
+                version_cluster.append(cluster["currentMasterVersion"])
+
+        t.add_column('Cluster', names_cluster)
+        t.add_column('Cluster status', status_cluster)
+        t.add_column('Cluster version', version_cluster)
+
+        print(t)
+
+        print("Listing nodepools...")
+
+        for nodepool in nodepools_response["nodePools"]:
+
+            names_nodepool.append(nodepool["name"])
+            status_nodepool.append(nodepool["status"])
+            version_nodepool.append(nodepool["version"])
+            mtype_nodepool.append(nodepool["config"]["machineType"])
+            asc_enabled.append(nodepool.get("autoscaling", {}).get("enabled", False))
+            asc_min.append(nodepool.get("autoscaling", {}).get("minNodeCount"))
+            asc_max.append(nodepool.get("autoscaling", {}).get("maxNodeCount"))
+
+        p.add_column('Nodepool', names_nodepool)
+        p.add_column('Status', status_nodepool)
+        p.add_column('Version', version_nodepool)
+        p.add_column('mType', mtype_nodepool)
+        p.add_column('Autoscaling', asc_enabled)
+        p.add_column('MinNode', asc_min)
+        p.add_column('MaxNode', asc_max)
+        print(p)
+
         return []
 
 if __name__ == '__main__':
@@ -248,7 +264,7 @@ if __name__ == '__main__':
 
         elif arguments.command == 'list_nodepools':
             # elif all(item is not None for item in [arguments.cluster, arguments.project_id, arguments.zone]) and arguments.context is None:
-            if any(item is None for item in [arguments.project_id, arguments.zone, arguments.cluster]):
+            if any(item is None for item in [arguments.project_id, arguments.zone]):
                 sys.tracebacklimit = 0
                 raise Exception("Please specify project_id, zone and cluster.")
             
